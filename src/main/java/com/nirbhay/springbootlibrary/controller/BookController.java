@@ -15,6 +15,12 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    @GetMapping("/secure/currentloans/count")
+    public int currentLoansCount() {
+        String userEmail = "testuser@email.com";
+        return bookService.currentLoansCount(userEmail);
+    }
+
     @PutMapping("/secure/checkout")
     public Book checkoutBook(@RequestParam Long bookId) throws Exception {
         String userEmail = "testuser@email.com";

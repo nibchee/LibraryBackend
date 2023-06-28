@@ -11,9 +11,12 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 /*
-Book Service functionality is: When user demands checkOuts for a specific book, then this Service
+Book Service functionality is:
+1.Book CheckOut functionlity
+When user demands checkOuts for a specific book, then this Service
 validates presence of book , does same book already checkout & user trying to checkout again &no book copies availble
 So on passing validation, it decrements the book count & saves checkout
+ 2.Book LoanCount functionality
  */
 @Service
 @Transactional
@@ -62,5 +65,9 @@ public class BookService {
             return true;
         }
         return false;
+    }
+
+    public int currentLoansCount(String userEmail){
+        return checkoutRepository.findBooksByUserEmail(userEmail).size();
     }
 }
