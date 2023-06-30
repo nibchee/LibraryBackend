@@ -1,6 +1,5 @@
 package com.nirbhay.springbootlibrary.service;
 
-import com.nirbhay.springbootlibrary.dao.BookRepository;
 import com.nirbhay.springbootlibrary.dao.ReviewRepository;
 import com.nirbhay.springbootlibrary.entity.Review;
 import com.nirbhay.springbootlibrary.requestmodels.ReviewRequest;
@@ -15,12 +14,11 @@ import java.time.LocalDate;
 @Transactional
 public class ReviewServie {
 
-    private BookRepository bookRepository;
-    private ReviewRepository reviewRepository;
+
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewServie(BookRepository bookRepository, ReviewRepository reviewRepository) {
-        this.bookRepository = bookRepository;
+    public ReviewServie(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
 
@@ -44,5 +42,10 @@ public class ReviewServie {
         review.setDate(Date.valueOf(LocalDate.now()));
         reviewRepository.save(review);
 
+    }
+
+    public Boolean userReviewListed(String userEmail, Long bookId) {
+        Review validateReview = reviewRepository.findByUserEmailAndBookId(userEmail, bookId);
+        return validateReview != null;
     }
 }
