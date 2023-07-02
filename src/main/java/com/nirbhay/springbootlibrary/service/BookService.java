@@ -2,8 +2,10 @@ package com.nirbhay.springbootlibrary.service;
 
 import com.nirbhay.springbootlibrary.dao.BookRepository;
 import com.nirbhay.springbootlibrary.dao.CheckoutRepository;
+import com.nirbhay.springbootlibrary.dao.HistoryRepository;
 import com.nirbhay.springbootlibrary.entity.Book;
 import com.nirbhay.springbootlibrary.entity.Checkout;
+import com.nirbhay.springbootlibrary.entity.History;
 import com.nirbhay.springbootlibrary.responsemodels.ShelfCurentLoansResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +33,13 @@ public class BookService {
 
     private CheckoutRepository checkoutRepository;
 
+    private HistoryRepository historyRepository;
+
     //here we are using constructor dependency injection
-    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository) {
+    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository) {
         this.bookRepository = bookRepository;
         this.checkoutRepository = checkoutRepository;
+        this.historyRepository = historyRepository;
     }
 
     public Book checkoutBook(String userEmail, Long bookId) throws Exception {
@@ -121,6 +126,20 @@ public class BookService {
         bookRepository.save(book.get());
 
         checkoutRepository.deleteById(validateCheckout.getId());
+
+        //after returning book saving in history
+        History history = new History(
+                userEmail,
+                validateCheckout.getCheckoutDate(),
+                LocalDate.now().toString(),
+                book.get().getTitle(),
+                book.get().getAuthor(),
+                book.get().getDescription(),
+                book.get().getImg()
+        );
+
+        historyRepository.save(history);
+
     }
 
     public void renewLoan(String userEmail, Long bookId) throws Exception {
