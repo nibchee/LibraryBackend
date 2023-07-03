@@ -19,7 +19,7 @@ public class MessageController {
     @PostMapping("/secure/add/message")
     public void postMessage(@RequestHeader(value = "Authorization") String token,
                             @RequestBody Message messageRequest) {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\'");
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         messageService.postMessage(messageRequest, userEmail);
 
     }
