@@ -1,6 +1,8 @@
 package com.nirbhay.springbootlibrary.config;
 
 import com.nirbhay.springbootlibrary.entity.Book;
+import com.nirbhay.springbootlibrary.entity.Message;
+import com.nirbhay.springbootlibrary.entity.Review;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -21,7 +23,12 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
                 HttpMethod.PUT};
 
         config.exposeIdsFor(Book.class);
+        config.exposeIdsFor(Review.class);
+        config.exposeIdsFor(Message.class);
+
         disabledHttpMethods(Book.class, config, theUnsupportedActions);
+        disabledHttpMethods(Review.class, config, theUnsupportedActions);
+        disabledHttpMethods(Message.class, config, theUnsupportedActions);
 
         /*
 
