@@ -3,6 +3,7 @@ package com.nirbhay.springbootlibrary.service;
 import com.nirbhay.springbootlibrary.dao.BookRepository;
 import com.nirbhay.springbootlibrary.dao.CheckoutRepository;
 import com.nirbhay.springbootlibrary.dao.HistoryRepository;
+import com.nirbhay.springbootlibrary.dao.PaymentRepository;
 import com.nirbhay.springbootlibrary.entity.Book;
 import com.nirbhay.springbootlibrary.entity.Checkout;
 import com.nirbhay.springbootlibrary.entity.History;
@@ -35,11 +36,14 @@ public class BookService {
 
     private HistoryRepository historyRepository;
 
+    private PaymentRepository paymentRepository;
+
     //here we are using constructor dependency injection
-    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository) {
+    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository,PaymentRepository paymentRepository) {
         this.bookRepository = bookRepository;
         this.checkoutRepository = checkoutRepository;
         this.historyRepository = historyRepository;
+        this.paymentRepository=paymentRepository;
     }
 
     public Book checkoutBook(String userEmail, Long bookId) throws Exception {
