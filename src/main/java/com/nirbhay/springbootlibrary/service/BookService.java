@@ -7,6 +7,7 @@ import com.nirbhay.springbootlibrary.dao.PaymentRepository;
 import com.nirbhay.springbootlibrary.entity.Book;
 import com.nirbhay.springbootlibrary.entity.Checkout;
 import com.nirbhay.springbootlibrary.entity.History;
+import com.nirbhay.springbootlibrary.entity.Payment;
 import com.nirbhay.springbootlibrary.responsemodels.ShelfCurentLoansResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +40,11 @@ public class BookService {
     private PaymentRepository paymentRepository;
 
     //here we are using constructor dependency injection
-    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository,PaymentRepository paymentRepository) {
+    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository, PaymentRepository paymentRepository) {
         this.bookRepository = bookRepository;
         this.checkoutRepository = checkoutRepository;
         this.historyRepository = historyRepository;
-        this.paymentRepository=paymentRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public Book checkoutBook(String userEmail, Long bookId) throws Exception {
@@ -57,6 +58,35 @@ public class BookService {
         if (!book.isPresent() || validateCheckout != null || book.get().getCopiesAvailable() <= 0) {
             throw new Exception("Book doesn't exist or already checked out by user");
         }
+
+        List<Checkout> currentBooksCheckOut = checkoutRepository.findBooksByUserEmail(userEmail);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        boolean bookNeedsReturned = false;
+
+        for (Checkout checkout : currentBooksCheckOut) {
+            Date d1 = sdf.parse(checkout.getReturnDate());
+            Date d2 = sdf.parse(LocalDate.now().toString());
+            TimeUnit time = TimeUnit.DAYS;
+            double differenceInTime = time.convert(d1.getTime() - d2.getTime(), TimeUnit.MILLISECONDS);
+            if (differenceInTime < 0) {
+                bookNeedsReturned = true;
+                break;
+            }
+        }
+
+        Payment userPayment = paymentRepository.findByUserEmail(userEmail);
+
+        if ((userPayment != null && userPayment.getAmount() > 0) || (userPayment != null && bookNeedsReturned)) {
+            throw new Exception("Outstanding fees");
+        }
+
+        if (userPayment == null) {
+            Payment payment = new Payment();
+            payment.setAmount(00.00);
+            payment.setUserEmail(userEmail);
+            paymentRepository.save(payment);
+        }
+
 
         //book.get() is an Optional Function & oncehout we decrement available copies
         book.get().setCopiesAvailable(book.get().getCopiesAvailable() - 1);
